@@ -31,6 +31,8 @@ from instancespace.data.default_options import (
     DEFAULT_PERFORMANCE_MAX_PERF,
     DEFAULT_PILOT_ANALYTICS,
     DEFAULT_PILOT_N_TRIES,
+    DEFAULT_PILOT_ROTATION,
+    DEFAULT_PILOT_THETA,
     DEFAULT_PYTHIA_CV_FOLDS,
     DEFAULT_PYTHIA_IS_POLY_KRNL,
     DEFAULT_PYTHIA_USE_GRID_SEARCH,
@@ -278,16 +280,27 @@ class PilotOptions:
     alpha: NDArray[np.double] | None
     analytic: bool
     n_tries: int
+    rotation: bool
+    theta: float
 
     @staticmethod
     def default(
         analytic: bool = DEFAULT_PILOT_ANALYTICS,
         n_tries: int = DEFAULT_PILOT_N_TRIES,
+        rotation: bool = DEFAULT_PILOT_ROTATION,
+        theta: float = DEFAULT_PILOT_THETA, 
         x0: NDArray[np.double] | None = None,
         alpha: NDArray[np.double] | None = None,
     ) -> PilotOptions:
         """Instantiate with default values."""
-        return PilotOptions(analytic=analytic, n_tries=n_tries, x0=x0, alpha=alpha)
+        return PilotOptions(
+            analytic=analytic,
+            n_tries=n_tries,
+            rotation=rotation,
+            theta=theta,
+            x0=x0,
+            alpha=alpha
+        )
 
 
 @dataclass(frozen=True)

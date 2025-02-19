@@ -104,6 +104,8 @@ The toolkit uses PILOT as a dimensionality reduction method, with [BFGS](https:/
 
 -	```opts.pilot.analytic``` determines whether the analytic (set as ```TRUE```) or the numerical (set as ```FALSE```) solution to the dimensionality reduction problem should be used. We recommend to leave this setting as ```FALSE```, due to the instability of the analytical solution due to possible poor-conditioning.
 -	```opts.pilot.ntries``` number of iterations that the numerical solution is attempted.
+-	```opts.pilot.rotation``` determines wheter the Intance Space should be rotated (set as ```TRUE```) or not (set as ```FALSE```) to set the centroid of bad instances in a given angle.
+-	```opts.pilot.theta``` float number in degrees specifying the angle in which the centroid should be fixed.
 
 ### Empirical bound estimation settings.
 

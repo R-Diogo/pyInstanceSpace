@@ -16,7 +16,7 @@ import scipy.linalg as la
 import scipy.optimize as optim
 from numpy.typing import NDArray
 from scipy.spatial.distance import pdist
-from scipy.stats import pearsonr
+from scipy.stats import mode, pearsonr
 
 from instancespace.data.options import PilotOptions
 from instancespace.stages.stage import Stage
@@ -31,6 +31,9 @@ class PilotInput(NamedTuple):
         The feature matrix (instances x features) to process.
     y : NDArray[np.double]
         The data points for the selected feature.
+    y_bin : NDArray[np.bool_]
+        Binary matrix indicating instances with good algorithm performance
+          (True if performance is good).
     feat_labels : list[str]
         List feature names.
     options: PilotOptions
@@ -39,6 +42,7 @@ class PilotInput(NamedTuple):
 
     x: NDArray[np.double]
     y: NDArray[np.double]
+    y_bin: NDArray[np.bool_] | None
     feat_labels: list[str]
     pilot_options: PilotOptions
 
@@ -92,6 +96,7 @@ class PilotStage(Stage[PilotInput, PilotOutput]):
         self,
         x: NDArray[np.double],
         y: NDArray[np.double],
+        y_bin: NDArray[np.bool_] | None,
         feat_labels: list[str],
     ) -> None:
         """Initialize the Pilot stage.
@@ -103,6 +108,8 @@ class PilotStage(Stage[PilotInput, PilotOutput]):
             x (NDArray[np.double]): The feature matrix (instances x features) to
                 process.
             y (NDArray[np.double]): The data points for the selected feature
+            y_bin (NDArray[np.bool_] | None): Binary matrix indicating instances with
+                good algorithm performance (True if performance is good)
             feat_labels (list[str]): List feature names
 
         Returns
@@ -111,6 +118,7 @@ class PilotStage(Stage[PilotInput, PilotOutput]):
         """
         self.x = x
         self.y = y
+        self.y_bin = y_bin
         self.feat_labels = feat_labels
 
     @staticmethod
@@ -159,6 +167,7 @@ class PilotStage(Stage[PilotInput, PilotOutput]):
         return PilotStage.pilot(
             inputs.x,
             inputs.y,
+            inputs.y_bin,
             inputs.feat_labels,
             inputs.pilot_options,
         )
@@ -175,6 +184,7 @@ class PilotStage(Stage[PilotInput, PilotOutput]):
     def pilot(
         x: NDArray[np.double],
         y: NDArray[np.double],
+        y_bin: NDArray[np.bool_] | None,
         feat_labels: list[str],
         options: PilotOptions,
         _do_output: bool = True,
@@ -187,6 +197,9 @@ class PilotStage(Stage[PilotInput, PilotOutput]):
             The feature matrix (instances x features) to process.
         y: NDArray[double]
             The data points for the selected feature.
+        y_bin : NDArray[np.bool_] | None
+            Binary matrix indicating instances with good algorithm performance
+              (True if performance is good).
         feat_labels :  list[str]
             List feature names.
         options : PilotOptions
@@ -270,6 +283,18 @@ class PilotStage(Stage[PilotInput, PilotOutput]):
             error = np.sum((x_bar - x_hat) ** 2)
             r2 = np.diag(np.corrcoef(x_bar, x_hat) ** 2).astype(np.double)
 
+        # Rotation adjustment
+        if options.rotation:
+            r_theta = PilotStage.rotation_adjust(
+                out_z,
+                y_bin,
+                options,
+                _do_output,
+            )
+            
+            out_a = r_theta @ out_a
+            out_z = out_z @ r_theta.T
+        
         if options.analytic:
             summary = pd.DataFrame(out_a)
             summary.rename(
@@ -563,3 +588,83 @@ class PilotStage(Stage[PilotInput, PilotOutput]):
         return float(
             np.nanmean(np.nanmean((x_bar - x_bar_approx) ** 2, axis=1), axis=0),
         )
+    
+    @staticmethod
+    def rotation_adjust(
+        out_z: NDArray[np.double],
+        y_bin: NDArray[np.bool_],
+        opts: PilotOptions,
+        _do_output: bool = True,
+    ) -> NDArray[np.double]:
+        """Adjust the projection matrix by rotation to fix centroid of bad (not good)
+        instances.
+
+        Bad instances are those in which most algorithms perform poorly.
+        
+        Args:
+        -------
+        out_z : NDArray[np.double]
+            Matrix Z.
+        y_bin : NDArray[np.bool_]
+            Binary matrix indicating instances with good algorithm performance
+              (True if performance is good).
+        opts : PilotOptions
+            Configuration options for PILOT.
+
+        Returns:
+        -------
+        NDArray[np.double]
+            The rotation matrix.
+        """
+        PilotStage._pilot_print(
+            "-------------------------------------------------------------------------",
+            _do_output,
+        )
+        PilotStage._pilot_print(
+            "  -> PILOT is adjusting the projection matrix by rotation.",
+            _do_output,
+        )
+        PilotStage._pilot_print(
+            "-------------------------------------------------------------------------",
+            _do_output,
+        )
+        
+        r_theta = np.eye(2, dtype=np.double)
+        
+        try:
+            bad_instances = mode(y_bin * 1, axis=1, keepdims=True)[0] == 0
+        except:
+            PilotStage._pilot_print(
+                f"  -> PILOT: ybin is of type {type(y_bin)}.\n"
+                 "  -> PILOT: Rotation won't be applied.",
+                _do_output,
+            )
+            PilotStage._pilot_print(
+                "-------------------------------------------------------------------------",
+                _do_output,
+            )
+            
+            return r_theta
+        
+        if bad_instances.any():
+            bad_instances = bad_instances[:, 0]
+            centroid_bad = np.mean(out_z[bad_instances], axis=0)[::-1]
+            theta = np.radians(opts.theta) - np.arctan2(*centroid_bad)
+            r_theta = np.array([[np.cos(theta), -np.sin(theta)],
+                                [np.sin(theta), np.cos(theta)]])
+
+            PilotStage._pilot_print(
+                f"  -> PILOT: Space was rotated by {np.degrees(theta):.1f} degrees.",
+                _do_output,
+            )
+        else:
+            PilotStage._pilot_print(
+                "  -> PILOT: No bad instances found. Rotation will not be applied.",
+                _do_output,)
+           
+        PilotStage._pilot_print(
+            "-------------------------------------------------------------------------",
+            _do_output,
+        )
+        
+        return r_theta

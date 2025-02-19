@@ -14,7 +14,7 @@
       "type": "Ftr&&Good"
     },
     "sifted": { "flag": true, "rho": 0.1, "K": 10, "NTREES": 50, "MaxIter": 1000, "Replicates": 100 },
-    "pilot": { "analytic": false, "ntries": 5 },
+    "pilot": { "analytic": false, "ntries": 5, "rotation": false, "theta": 0.0 },
     "cloister": { "pval": 0.05, "cthres": 0.7 },
     "pythia": { "cvfolds": 5, "ispolykrnl": false, "useweights": true, "uselibsvm": false },
     "trace": { "usesim": true, "PI": 0.55 },

@@ -62,7 +62,7 @@ class SampleDataNum:
         self.feat_labels_sample = [str(label[0]) for label in feat_labels]
         analytic = data["optsPilot"][0, 0]["analytic"][0, 0]
         n_tries = int(data["optsPilot"][0, 0]["ntries"][0, 0])
-        self.opts_sample = PilotOptions(None, None, analytic, n_tries)
+        self.opts_sample = PilotOptions(None, None, analytic, n_tries, False, 0.0)
 
 
 class SampleData:
@@ -183,9 +183,16 @@ def test_pilot_num_pythia_bayes_gaussian() -> None:
     y_sample = sample_data.y_sample
     feat_labels_sample = sample_data.feat_labels_sample
     opts_sample = sample_data.opts_sample
-    pilot_opts = PilotOptions(None, None, opts_sample.analytic, opts_sample.n_tries)
-    pilot = PilotStage(x_sample, y_sample, feat_labels_sample)
-    pilot_result = pilot.pilot(x_sample, y_sample, feat_labels_sample, pilot_opts)
+    pilot_opts = PilotOptions(
+        None,
+        None,
+        opts_sample.analytic,
+        opts_sample.n_tries,
+        False,
+        0.0
+    )
+    pilot = PilotStage(x_sample, y_sample, None, feat_labels_sample)
+    pilot_result = pilot.pilot(x_sample, y_sample, None, feat_labels_sample, pilot_opts)
 
     pythia_options = PythiaOptions(
         cv_folds=5,
@@ -237,9 +244,16 @@ def test_pilot_num_pythia_bayes_poly() -> None:
     y_sample = sample_data.y_sample
     feat_labels_sample = sample_data.feat_labels_sample
     opts_sample = sample_data.opts_sample
-    pilot_opts = PilotOptions(None, None, opts_sample.analytic, opts_sample.n_tries)
-    pilot = PilotStage(x_sample, y_sample, feat_labels_sample)
-    pilot_result = pilot.pilot(x_sample, y_sample, feat_labels_sample, pilot_opts)
+    pilot_opts = PilotOptions(
+        None, 
+        None, 
+        opts_sample.analytic, 
+        opts_sample.n_tries,
+        False,
+        0.0
+    )
+    pilot = PilotStage(x_sample, y_sample, None, feat_labels_sample)
+    pilot_result = pilot.pilot(x_sample, y_sample, None, feat_labels_sample, pilot_opts)
 
     opts = PythiaOptions(
         cv_folds=5,
@@ -291,9 +305,16 @@ def test_pilot_num_pythia_grid_gaussian() -> None:
     y_sample = sample_data.y_sample
     feat_labels_sample = sample_data.feat_labels_sample
     opts_sample = sample_data.opts_sample
-    pilot_opts = PilotOptions(None, None, opts_sample.analytic, opts_sample.n_tries)
-    pilot = PilotStage(x_sample, y_sample, feat_labels_sample)
-    pilot_result = pilot.pilot(x_sample, y_sample, feat_labels_sample, pilot_opts)
+    pilot_opts = PilotOptions(
+        None, 
+        None, 
+        opts_sample.analytic, 
+        opts_sample.n_tries,
+        False,
+        0.0
+    )
+    pilot = PilotStage(x_sample, y_sample, None, feat_labels_sample)
+    pilot_result = pilot.pilot(x_sample, y_sample, None, feat_labels_sample, pilot_opts)
 
     opts = PythiaOptions(
         cv_folds=5,
@@ -345,9 +366,16 @@ def test_pilot_num_pythia_grid_poly() -> None:
     y_sample = sample_data.y_sample
     feat_labels_sample = sample_data.feat_labels_sample
     opts_sample = sample_data.opts_sample
-    pilot_opts = PilotOptions(None, None, opts_sample.analytic, opts_sample.n_tries)
-    pilot = PilotStage(x_sample, y_sample, feat_labels_sample)
-    pilot_result = pilot.pilot(x_sample, y_sample, feat_labels_sample, pilot_opts)
+    pilot_opts = PilotOptions(
+        None, 
+        None, 
+        opts_sample.analytic, 
+        opts_sample.n_tries,
+        False,
+        0.0
+    )
+    pilot = PilotStage(x_sample, y_sample, None, feat_labels_sample)
+    pilot_result = pilot.pilot(x_sample, y_sample, None, feat_labels_sample, pilot_opts)
 
     opts = PythiaOptions(
         cv_folds=5,
@@ -398,10 +426,17 @@ def test_pilot_analytic_pythia_grid_gaussian() -> None:
     x_sample = sample_data.x_sample
     y_sample = sample_data.y_sample
     feat_labels_sample = sample_data.feat_labels_sample
-    opts_sample = PilotOptions(None, None, True, 5)
-    pilot_opts = PilotOptions(None, None, opts_sample.analytic, opts_sample.n_tries)
-    pilot = PilotStage(x_sample, y_sample, feat_labels_sample)
-    pilot_result = pilot.pilot(x_sample, y_sample, feat_labels_sample, pilot_opts)
+    opts_sample = PilotOptions(None, None, True, 5, False, 0.0)
+    pilot_opts = PilotOptions(
+        None, 
+        None, 
+        opts_sample.analytic, 
+        opts_sample.n_tries, 
+        False, 
+        0.0
+    )
+    pilot = PilotStage(x_sample, y_sample, None, feat_labels_sample)
+    pilot_result = pilot.pilot(x_sample, y_sample, None, feat_labels_sample, pilot_opts)
 
     opts = PythiaOptions(
         cv_folds=5,
@@ -454,10 +489,17 @@ def test_pilot_analytic_pythia_grid_poly() -> None:
     x_sample = sample_data.x_sample
     y_sample = sample_data.y_sample
     feat_labels_sample = sample_data.feat_labels_sample
-    opts_sample = PilotOptions(None, None, True, 5)
-    pilot_opts = PilotOptions(None, None, opts_sample.analytic, opts_sample.n_tries)
-    pilot = PilotStage(x_sample, y_sample, feat_labels_sample)
-    pilot_result = pilot.pilot(x_sample, y_sample, feat_labels_sample, pilot_opts)
+    opts_sample = PilotOptions(None, None, True, 5, False, 0.0)
+    pilot_opts = PilotOptions(
+        None, 
+        None, 
+        opts_sample.analytic, 
+        opts_sample.n_tries, 
+        False, 
+        0.0
+    )
+    pilot = PilotStage(x_sample, y_sample, None, feat_labels_sample)
+    pilot_result = pilot.pilot(x_sample, y_sample, None, feat_labels_sample, pilot_opts)
 
     opts = PythiaOptions(
         cv_folds=5,
@@ -510,10 +552,17 @@ def test_pilot_analytic_pythia_bo_gaussian() -> None:
     x_sample = sample_data.x_sample
     y_sample = sample_data.y_sample
     feat_labels_sample = sample_data.feat_labels_sample
-    opts_sample = PilotOptions(None, None, True, 5)
-    pilot_opts = PilotOptions(None, None, opts_sample.analytic, opts_sample.n_tries)
-    pilot = PilotStage(x_sample, y_sample, feat_labels_sample)
-    pilot_result = pilot.pilot(x_sample, y_sample, feat_labels_sample, pilot_opts)
+    opts_sample = PilotOptions(None, None, True, 5, False, 0.0)
+    pilot_opts = PilotOptions(
+        None, 
+        None, 
+        opts_sample.analytic, 
+        opts_sample.n_tries, 
+        False, 
+        0.0
+    )
+    pilot = PilotStage(x_sample, y_sample, None, feat_labels_sample)
+    pilot_result = pilot.pilot(x_sample, y_sample, None, feat_labels_sample, pilot_opts)
 
     opts = PythiaOptions(
         cv_folds=5,
@@ -566,10 +615,17 @@ def test_pilot_analytic_pythia_bo_poly() -> None:
     x_sample = sample_data.x_sample
     y_sample = sample_data.y_sample
     feat_labels_sample = sample_data.feat_labels_sample
-    opts_sample = PilotOptions(None, None, True, 5)
-    pilot_opts = PilotOptions(None, None, opts_sample.analytic, opts_sample.n_tries)
-    pilot = PilotStage(x_sample, y_sample, feat_labels_sample)
-    pilot_result = pilot.pilot(x_sample, y_sample, feat_labels_sample, pilot_opts)
+    opts_sample = PilotOptions(None, None, True, 5, False, 0.0)
+    pilot_opts = PilotOptions(
+        None, 
+        None, 
+        opts_sample.analytic, 
+        opts_sample.n_tries, 
+        False, 
+        0.0
+    )
+    pilot = PilotStage(x_sample, y_sample, None, feat_labels_sample)
+    pilot_result = pilot.pilot(x_sample, y_sample, None, feat_labels_sample, pilot_opts)
 
     opts = PythiaOptions(
         cv_folds=5,
