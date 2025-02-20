@@ -42,7 +42,7 @@ class PilotInput(NamedTuple):
 
     x: NDArray[np.double]
     y: NDArray[np.double]
-    y_bin: NDArray[np.bool_] | None
+    y_bin: NDArray[np.bool_]
     feat_labels: list[str]
     pilot_options: PilotOptions
 
@@ -96,7 +96,7 @@ class PilotStage(Stage[PilotInput, PilotOutput]):
         self,
         x: NDArray[np.double],
         y: NDArray[np.double],
-        y_bin: NDArray[np.bool_] | None,
+        y_bin: NDArray[np.bool_],
         feat_labels: list[str],
     ) -> None:
         """Initialize the Pilot stage.
@@ -108,7 +108,7 @@ class PilotStage(Stage[PilotInput, PilotOutput]):
             x (NDArray[np.double]): The feature matrix (instances x features) to
                 process.
             y (NDArray[np.double]): The data points for the selected feature
-            y_bin (NDArray[np.bool_] | None): Binary matrix indicating instances with
+            y_bin (NDArray[np.bool_]): Binary matrix indicating instances with
                 good algorithm performance (True if performance is good)
             feat_labels (list[str]): List feature names
 
@@ -184,7 +184,7 @@ class PilotStage(Stage[PilotInput, PilotOutput]):
     def pilot(
         x: NDArray[np.double],
         y: NDArray[np.double],
-        y_bin: NDArray[np.bool_] | None,
+        y_bin: NDArray[np.bool_],
         feat_labels: list[str],
         options: PilotOptions,
         _do_output: bool = True,
@@ -197,7 +197,7 @@ class PilotStage(Stage[PilotInput, PilotOutput]):
             The feature matrix (instances x features) to process.
         y: NDArray[double]
             The data points for the selected feature.
-        y_bin : NDArray[np.bool_] | None
+        y_bin : NDArray[np.bool_]
             Binary matrix indicating instances with good algorithm performance
               (True if performance is good).
         feat_labels :  list[str]
